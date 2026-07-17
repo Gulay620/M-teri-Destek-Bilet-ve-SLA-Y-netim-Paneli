@@ -1,0 +1,27 @@
+<div style="display: flex; flex-direction: column; height: 100vh;">
+  <!-- Üst Bar (Navbar) -->
+  <header style="background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <h2>SLA & Ticket Panel</h2>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <span>Aktif Kullanıcı: <strong>{{ authService.currentUserName() }}</strong></span>
+      <select (change)="onRoleChange($value)" [value]="authService.currentUserRole()" style="padding: 5px; border-radius: 4px;">
+        <option value="TEAM_LEADER">Takım Lideri</option>
+        <option value="SUPPORT_AGENT">Destek Temsilcisi</option>
+        <option value="CUSTOMER">Müşteri Görüntüleyici</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Alt Kısım (Sidebar + İçerik) -->
+  <div style="display: flex; flex: 1;">
+    <aside style="width: 240px; background: #0f172a; color: white; padding: 20px 10px;">
+      <nav style="display: flex; flex-direction: column; gap: 10px;">
+        <a routerLink="/dashboard" routerLinkActive="active" style="color: #cbd5e1; text-decoration: none; padding: 10px; border-radius: 4px; display: block;">📥 Ticket Inbox</a>
+      </nav>
+    </aside>
+
+    <main style="flex: 1; padding: 20px; overflow-y: auto;">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

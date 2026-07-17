@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destek & SLA Yönetim Paneli</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <!-- Chart.js -->
+    <script src="https://jsdelivr.net"></script>
+
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --sidebar-text: #94a3b8;
+            --sidebar-text-active: #ffffff;
+            --primary: #4f46e5;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-brand i {
+            color: var(--primary);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu li a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li.active a, .sidebar-menu li a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--sidebar-text-active);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .kpi-badge {
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .badge-success { background: #ecfdf5; color: var(--success); }
+        .badge-danger { background: #fef2f2; color: var(--danger); }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        /* SLA Table Area */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8fafc;
+            padding: 14px 24px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .sla-status {
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .status-ok { background: #ecfdf5; color: var(--success); }
+        .status-warning { background: #fffbeb; color: var(--warning); }
+        .status-breach { background: #fef2f2; color: var(--danger); }
+
+        .priority-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .p-high { background: #fee2e2; color: var(--danger); }
+        .p-medium { background: #fef3c7; color: var(--warning); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Yan Menü (Sidebar) -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-ticket"></i>
+            <span>TicketFlow</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="#"><i class="fa-solid fa-chart-pie"></i> Kontrol Paneli</a></li>
+            <li><a href="#"><i class="fa-solid fa-list-check"></i> Canlı Biletler</a></li>
+            <li><a href="#"><i class="fa-solid fa-clock-history"></i> SLA Politikaları</a></li>
+            <li><a href="#"><i class="fa-solid fa-users"></i> Destek Ekibi</a></li>
+            <li><a href="#"><i class="fa-solid fa-chart-line"></i> Performans</a></li>
+            <li><a href="#"><i class="fa-solid fa-gear"></i> Ayarlar</a></li>
+        </ul>
+    </div>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="main-content">
+        <!-- Başlık Üst Barı -->
+        <div class="header">
+            <div>
+                <h1>Yönetici Kontrol Paneli</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">SLA ve Destek Ekibi Anlık İzleme</p>
+            </div>
+            <div class="user-profile">
+                <div style="text-align: right;">
+                    <h4 style="font-size: 14px;">Ahmet Yılmaz</h4>
+                    <p style="color: var(--text-muted); font-size: 12px;">Destek Yöneticisi</p>
+                </div>
+                <img src="https://unsplash.com" alt="Profil">
+            </div>
+        </div>
+
+        <!-- KPI Kartları -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Aktif Bilet Sayısı</div>
+                <div class="kpi-value">142</div>
+                <span class="kpi-badge badge-danger"><i class="fa-solid fa-arrow-trend-up"></i> %12 artış</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Ort. İlk Yanıt Süresi (FRT)</div>
+                <div class="kpi-value">14 dk</div>
+                <span class="kpi-badge badge-success"><i class="fa-solid fa-arrow-trend-down"></i> 3 dk azaldı</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">SLA Uyumluluk Oranı</div>
+                <div class="kpi-value">%96.4</div>
+                <span class="kpi-badge badge-success"><i class="fa-solid fa-check"></i> Hedef Üstü</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Müşteri Memnuniyeti (CSAT)</div>
+                <div class="kpi-value">4.8 / 5</div>
+                <span class="kpi-badge badge-success"><i class="fa-solid fa-face-smile"></i> Mükemmel</span>
+            </div>
+        </div>
+
+        <!-- Grafikler -->
+        <div class="charts-grid">
+            <!-- Çizgi Grafik -->
+            <div class="chart-card">
+                <h3>Haftalık Bilet Yoğunluğu & Çözüm Trendi</h3>
+                <canvas id="trendChart" height="120"></canvas>
+            </div>
+            <!-- Pasta Grafik -->
+            <div class="chart-card">
+                <h3>Bilet Kategorileri</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
