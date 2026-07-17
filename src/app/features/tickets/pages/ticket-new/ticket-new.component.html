@@ -1,0 +1,68 @@
+<div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Yeni Destek Talebi Oluştur</h2>
+    <a routerLink="/dashboard" style="text-decoration: none; color: #475569; font-size: 14px;">📁 İptal Et ve Dön</a>
+  </div>
+
+  <!-- Hata Bildirimi (Error State) -->
+  <div *ngIf="errorMessage()" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 4px; margin-bottom: 15px;">
+    ⚠️ {{ errorMessage() }}
+  </div>
+
+  <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+    <!-- Konu / Başlık -->
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #334155;">Talep Başlığı *</label>
+      <input type="text" formControlName="title" placeholder="Sorunu kısaca özetleyin..."
+             style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+      <div *ngIf="f['title'].touched && f['title'].errors" style="color: #dc2626; font-size: 12px; margin-top: 5px;">
+        <span *ngIf="f['title'].errors['required']">Başlık alanı zorunludur.</span>
+        <span *ngIf="f['title'].errors['minlength']">Başlık en az 5 karakter olmalıdır.</span>
+      </div>
+    </div>
+
+    <!-- Kategori -->
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #334155;">Kategori *</label>
+      <select formControlName="category" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <option value="">Kategori Seçiniz</option>
+        <option value="Ödeme Sistemleri">Ödeme Sistemleri</option>
+        <option value="Üyelik İşlemleri">Üyelik İşlemleri</option>
+        <option value="Muhasebe / Fatura">Muhasebe / Fatura</option>
+        <option value="Teknik Hata">Teknik Hata</option>
+      </select>
+      <div *ngIf="f['category'].touched && f['category'].errors" style="color: #dc2626; font-size: 12px; margin-top: 5px;">
+        <span>Kategori seçimi zorunludur.</span>
+      </div>
+    </div>
+
+    <!-- Öncelik Seviyesi -->
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #334155;">Öncelik Seviyesi *</label>
+      <select formControlName="priority" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <option value="LOW">Düşük (Low) - 24 Saat SLA</option>
+        <option value="MEDIUM">Orta (Medium) - 24 Saat SLA</option>
+        <option value="HIGH">Yüksek (High) - 8 Saat SLA</option>
+        <option value="CRITICAL">Kritik (Critical) - 4 Saat SLA</option>
+      </select>
+    </div>
+
+    <!-- Açıklama -->
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #334155;">Detaylı Açıklama *</label>
+      <textarea formControlName="description" rows="5" placeholder="Yaşadığınız problemi detaylıca anlatın..."
+                style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; resize: vertical;"></textarea>
+      <div *ngIf="f['description'].touched && f['description'].errors" style="color: #dc2626; font-size: 12px; margin-top: 5px;">
+        <span *ngIf="f['description'].errors['required']">Açıklama alanı zorunludur.</span>
+        <span *ngIf="f['description'].errors['minlength']">Açıklama en az 10 karakter olmalıdır.</span>
+      </div>
+    </div>
+
+    <!-- Butonlar ve Loading Durumu -->
+    <button type="submit" [disabled]="isLoading() || ticketForm.invalid" 
+            style="width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+      <span *ngIf="!isLoading()">🎟️ Talebi Gönder</span>
+      <span *ngIf="isLoading()">⏳ Kaydediliyor...</span>
+    </button>
+  </form>
+</div>
